@@ -272,30 +272,7 @@ def get_detection_area_matrix_in_cloud(front_bottom, back_bottom, detection_area
     return detection_area_matrix_in_cloud
 
 
-def get_mesh_cloud():
-    mesh_box = o3d.geometry.TriangleMesh.create_box(
-        width=400, height=200, depth=500)
-
-    mesh_box_cloud = sample_mesh_to_cloud(mesh_box, 100000)
-    mesh_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0.707, 0, 0]).A)
-    mesh_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0, 0, 0.707]).A)
-    mesh_box_cloud.transform(pose2matrix([25, -200, -200, 1, 0, 0, 0]).A)
-
-    front_box = o3d.geometry.TriangleMesh.create_box(
-        width=110, height=30, depth=50)
-    front_box_cloud = sample_mesh_to_cloud(front_box, 100000)
-    front_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0.707, 0, 0]).A)
-    front_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0, 0, 0.707]).A)
-    front_box_cloud.transform(pose2matrix([0, -55, -30, 1, 0, 0, 0]).A)
-
-    mesh_cloud = mesh_box_cloud + front_box_cloud
-    return mesh_cloud
-
-
-def calibration(load_path, save_path, front_bottom, back_bottom, detection_area_dimensions, icp_threshold):
-
-    target = load_point_cloud(load_path)
-    source = get_mesh_cloud()
+def calibration(source, target, save_path, front_bottom, back_bottom, detection_area_dimensions, icp_threshold):
 
     while True:
         print('Please press Shift and click the feature points, press Q to finish')
@@ -354,15 +331,39 @@ def calibration(load_path, save_path, front_bottom, back_bottom, detection_area_
     o3d.io.write_point_cloud(save_path, tfed_target)
 
 
+def get_mesh_cloud():
+    mesh_box = o3d.geometry.TriangleMesh.create_box(
+        width=400, height=200, depth=500)
+
+    mesh_box_cloud = sample_mesh_to_cloud(mesh_box, 100000)
+    mesh_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0.707, 0, 0]).A)
+    mesh_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0, 0, 0.707]).A)
+    mesh_box_cloud.transform(pose2matrix([25, -200, -200, 1, 0, 0, 0]).A)
+
+    front_box = o3d.geometry.TriangleMesh.create_box(
+        width=110, height=30, depth=50)
+    front_box_cloud = sample_mesh_to_cloud(front_box, 100000)
+    front_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0.707, 0, 0]).A)
+    front_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0, 0, 0.707]).A)
+    front_box_cloud.transform(pose2matrix([0, -55, -30, 1, 0, 0, 0]).A)
+
+    mesh_cloud = mesh_box_cloud + front_box_cloud
+    return mesh_cloud
+
+
 def main():
     load_path = '/home/bot/dev/tote_full/vzense/pcd/0802/7.pcd'
     save_path = '/home/bot/dev/tote_full/vzense/pcd/0802/tfed_7.pcd'
+
+    source = get_mesh_cloud()
+    target = load_point_cloud(load_path)
+
     front_bottom = np.array([0, 0, -200])
     back_bottom = np.array([500, 0, -200])
     detection_area_dimensions = [500, 400, 200]
     icp_threshold = 0.03
 
-    calibration(load_path, save_path, front_bottom,
+    calibration(source, target, save_path, front_bottom,
                 back_bottom, detection_area_dimensions, icp_threshold)
 
 
