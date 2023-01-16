@@ -333,34 +333,34 @@ def calibration(source, target, save_path, front_bottom, back_bottom, detection_
 
 def get_mesh_cloud():
     mesh_box = o3d.geometry.TriangleMesh.create_box(
-        width=400, height=200, depth=500)
+        width=0.400, height=0.200, depth=0.500)
 
     mesh_box_cloud = sample_mesh_to_cloud(mesh_box, 100000)
     mesh_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0.707, 0, 0]).A)
     mesh_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0, 0, 0.707]).A)
-    mesh_box_cloud.transform(pose2matrix([25, -200, -200, 1, 0, 0, 0]).A)
+    mesh_box_cloud.transform(pose2matrix([0.025, -0.200, -0.200, 1, 0, 0, 0]).A)
 
     front_box = o3d.geometry.TriangleMesh.create_box(
-        width=110, height=30, depth=50)
+        width=0.110, height=0.030, depth=0.050)
     front_box_cloud = sample_mesh_to_cloud(front_box, 100000)
     front_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0.707, 0, 0]).A)
     front_box_cloud.transform(pose2matrix([0, 0, 0, 0.707, 0, 0, 0.707]).A)
-    front_box_cloud.transform(pose2matrix([0, -55, -30, 1, 0, 0, 0]).A)
+    front_box_cloud.transform(pose2matrix([0, -0.055, -0.030, 1, 0, 0, 0]).A)
 
     mesh_cloud = mesh_box_cloud + front_box_cloud
     return mesh_cloud
 
 
 def main():
-    load_path = '/home/bot/dev/tote_full/vzense/pcd/0802/7.pcd'
-    save_path = '/home/bot/dev/tote_full/vzense/pcd/0802/tfed_7.pcd'
+    load_path = './save.pcd'
+    save_path = './tfed_save.pcd'
 
     source = get_mesh_cloud()
     target = load_point_cloud(load_path)
 
-    front_bottom = np.array([0, 0, -200])
-    back_bottom = np.array([500, 0, -200])
-    detection_area_dimensions = [500, 400, 200]
+    front_bottom = np.array([0, 0, -0.200])
+    back_bottom = np.array([0.500, 0, -0.200])
+    detection_area_dimensions = [0.500, 0.400, 0.200]
     icp_threshold = 0.03
 
     calibration(source, target, save_path, front_bottom,
